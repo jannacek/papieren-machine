@@ -1,0 +1,716 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>De Papieren Machine</title>
+<meta name="description" content="De Papieren Machine / The Paper Machine: a language model made of paper. Talk and workshop at the KB, 29 October 2026.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&family=Space+Mono:wght@400;700&display=swap">
+<style>
+:root{
+  /* print-pack palette, taken from the A3 reading stand */
+  --bg:#F2EFE7; --card:#FBFAF6; --ink:#141416; --ink-2:#55534D; --line:#141416; --soft:#E3DFD3;
+  --blue:#2F5BE8; --red:#E5372F; --yellow:#F2E24A;
+  --pink:#FF9FD0; --orange:#FF9E3D; --teal:#8FE0D2; --lilac:#BBA6F7;
+  --fixed-ink:#141416; --fixed-paper:#F2EFE7;
+  --hero-bg:#141416; --hero-ink:#F2EFE7; --hero-dim:#B9B6AC;
+  --link:#2F5BE8;
+  --mono:"Space Mono",ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+  --serif:"Newsreader",Georgia,"Times New Roman",serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#111113; --card:#1B1B1E; --ink:#F2EFE7; --ink-2:#A9A69C; --line:#F2EFE7; --soft:#2A2A2E;
+  --hero-bg:#000; --link:#8DA6FF; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#111113; --card:#1B1B1E; --ink:#F2EFE7; --ink-2:#A9A69C; --line:#F2EFE7; --soft:#2A2A2E;
+  --hero-bg:#000; --link:#8DA6FF; color-scheme:dark}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 1.125rem/1.62 var(--serif);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  padding-block:clamp(12px,3vw,28px) 0;font-optical-sizing:auto}
+.wrap{max-width:70rem;margin-inline:auto}
+img{display:block;max-width:100%;height:auto}
+a{color:var(--link);text-underline-offset:.18em;text-decoration-thickness:1px}
+a:hover{text-decoration-thickness:2px}
+:focus-visible{outline:3px solid var(--blue);outline-offset:3px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) :focus-visible{outline-color:var(--yellow)}}
+:root[data-theme="dark"] :focus-visible{outline-color:var(--yellow)}
+p{margin:0 0 1em;max-width:62ch}
+em{font-style:italic}
+.nl{font-style:italic;color:var(--ink-2)}
+mark.hl{background:var(--yellow);color:var(--fixed-ink);padding:0 .18em;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+.mono{font-family:var(--mono)}
+.small{font-size:.95rem;line-height:1.5;color:var(--ink-2)}
+
+/* ---------- hero ---------- */
+.hero{position:relative;background:var(--hero-bg);color:var(--hero-ink);padding:clamp(20px,5vw,56px);overflow:hidden;
+  min-height:clamp(30rem,62vw,40rem);display:flex;flex-direction:column;border:1px solid var(--soft)}
+.hero-meta{font:400 .74rem/1.7 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--hero-ink);margin:0;max-width:none}
+.hero-meta i{font-style:normal;color:var(--yellow);padding:0 .35em}
+.hero h1{font:700 clamp(2.5rem,12.4vw,7.4rem)/.98 var(--mono);letter-spacing:-.03em;margin:clamp(1.6rem,6vw,3.4rem) 0 0;text-transform:uppercase}
+.hero h1 span{display:block}
+.hero h1 mark{background:var(--yellow);color:var(--fixed-ink);padding:0 .08em;margin-left:-.06em;display:inline-block;line-height:1}
+.hero-sub{font:italic 400 clamp(1.4rem,3.4vw,2.2rem)/1.2 var(--serif);margin:clamp(1.2rem,3vw,2rem) 0 0;max-width:none}
+.hero-sub small{display:block;font-size:.78em;color:var(--hero-dim)}
+.hero-foot{margin-top:auto;padding-top:clamp(1.8rem,5vw,3.5rem);font:400 .74rem/1.9 var(--mono);letter-spacing:.14em;text-transform:uppercase;max-width:none}
+.hero-foot i{font-style:normal;color:var(--orange);padding:0 .5em}
+.deal{display:flex;flex-direction:column;align-items:flex-start;gap:.7rem;margin-top:1.6rem}
+.wc{--r:-2deg;position:relative;background:#fff;color:var(--fixed-ink);font:400 clamp(.95rem,2.4vw,1.35rem)/1 var(--mono);
+  padding:.62em 1.5em .62em .85em;border:1px solid var(--fixed-ink);transform:rotate(var(--r));
+  box-shadow:3px 4px 0 rgba(255,255,255,.14);white-space:nowrap}
+.wc::after{content:"";position:absolute;top:-1px;right:-1px;width:.7em;height:.7em;background:var(--k,var(--pink));border:1px solid var(--fixed-ink)}
+.wc b{font-weight:400;padding:0 .12em}
+.wc:nth-child(2){--r:1.2deg;--k:var(--teal);margin-left:1.6rem}
+.wc:nth-child(3){--r:-1deg;--k:var(--orange);margin-left:.6rem}
+@media (min-width:820px){
+  .deal{position:absolute;right:clamp(20px,4vw,56px);top:clamp(7rem,12vw,9rem);align-items:flex-end;margin:0}
+  .wc:nth-child(2){margin-left:0;margin-right:2.2rem}
+  .wc:nth-child(3){margin-left:0;margin-right:.4rem}
+}
+@media (prefers-reduced-motion:no-preference){
+  .wc{animation:deal .7s cubic-bezier(.2,.9,.3,1) both}
+  .wc:nth-child(1){animation-delay:.25s}.wc:nth-child(2){animation-delay:.55s}.wc:nth-child(3){animation-delay:.85s}
+  @keyframes deal{from{opacity:0;transform:translateY(-26px) rotate(calc(var(--r) * 5))}}
+}
+
+/* ---------- nav ---------- */
+.toc{display:flex;flex-wrap:wrap;gap:.3rem 1.4rem;padding:1rem 0;margin:0;list-style:none;font:400 .88rem/1.4 var(--mono)}
+.toc a{color:var(--ink);text-decoration:none;border-bottom:2px solid transparent;padding-block:.15rem}
+.toc a:hover{border-bottom-color:var(--yellow)}
+.toc .tbd a{color:var(--ink-2)}
+
+/* ---------- sections ---------- */
+.sec{padding-block:clamp(2.6rem,6vw,5rem);border-top:2px solid var(--line);scroll-margin-top:.5rem}
+.cols{display:grid;gap:1.4rem 3rem;grid-template-columns:minmax(0,1fr)}
+@media (min-width:880px){.cols{grid-template-columns:15rem minmax(0,1fr)}}
+.sec h2{font:700 clamp(1.45rem,3.3vw,2.15rem)/1.12 var(--mono);letter-spacing:-.02em;margin:0;text-wrap:balance}
+.sec h3{font:700 1.15rem/1.25 var(--mono);margin:0 0 .5em}
+.lead{font-size:clamp(1.25rem,2.4vw,1.5rem);line-height:1.45;max-width:46ch}
+.stack>*+*{margin-top:1.6rem}
+.fig{margin:0}
+.fig img{border:1px solid var(--soft);background:#fff}
+.fig figcaption{font:400 .8rem/1.5 var(--mono);color:var(--ink-2);margin-top:.55rem;max-width:62ch}
+.fig a{display:block}
+
+.pull{margin:0;padding:1.1rem 0 1.1rem 1.2rem;border-left:6px solid var(--yellow);font:400 clamp(1.25rem,2.6vw,1.65rem)/1.35 var(--serif);max-width:42ch}
+.pull .nl{display:block;font-size:.8em;margin-top:.4em}
+
+.facts{display:grid;gap:0;grid-template-columns:repeat(auto-fit,minmax(13rem,1fr));border:2px solid var(--line);background:var(--card)}
+.facts>div{padding:1rem 1.1rem;border-right:2px solid var(--line);border-bottom:2px solid var(--line);margin:0 -2px -2px 0}
+.facts dt{font:400 .78rem/1.4 var(--mono);color:var(--ink-2);margin:0 0 .25rem}
+.facts dd{margin:0;font:700 1.15rem/1.3 var(--mono)}
+.facts dd span{display:block;font:400 .98rem/1.4 var(--serif);color:var(--ink-2);margin-top:.2rem}
+
+.kinds{display:flex;flex-wrap:wrap;gap:.45rem;margin:0;padding:0;list-style:none}
+.kind{background:var(--c);color:var(--fixed-ink);font:400 .8rem/1 var(--mono);padding:.5em .75em}
+.k-f{--c:var(--pink)}.k-a{--c:var(--orange)}.k-s{--c:var(--teal)}.k-m{--c:var(--yellow)}.k-n{--c:var(--lilac)}
+
+/* ---------- stations ---------- */
+.stations{display:grid;gap:clamp(1.4rem,3vw,2.4rem)}
+.station{--sc:var(--blue);--sh:#fff;border:3px solid var(--sc);background:var(--card)}
+.station.s2{--sc:var(--ink);--sh:var(--bg)}
+.station.s3{--sc:var(--red)}
+.st-head{background:var(--sc);color:var(--sh);padding:1rem 1.2rem;display:flex;align-items:baseline;gap:1.1rem;flex-wrap:wrap}
+.st-head .n{font:700 2.6rem/1 var(--mono)}
+.st-head h3{margin:0;font:700 clamp(1.15rem,2.6vw,1.5rem)/1.15 var(--mono);color:inherit}
+.st-head h3 small{display:block;font:400 .78rem/1.5 var(--mono);opacity:.85;margin-top:.2rem}
+.st-body{display:grid;gap:1.4rem 2rem;padding:1.3rem 1.2rem 1.4rem;grid-template-columns:minmax(0,1fr)}
+@media (min-width:900px){.st-body{grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);align-items:start}}
+.st-body ol,.st-body ul{margin:0 0 1em;padding-left:1.25em;max-width:56ch}
+.st-body li+li{margin-top:.4em}
+.real{border-top:2px solid var(--line);padding-top:.8rem;margin-top:1.1rem;max-width:56ch}
+.real h4{font:700 .85rem/1.3 var(--mono);margin:0 0 .3rem}
+.real p{margin:0;font-size:1rem;line-height:1.5}
+.trays{font:400 .95rem/1.9 var(--mono);display:flex;flex-wrap:wrap;gap:.3rem;margin:.4rem 0 1rem;padding:0;list-style:none}
+.trays li{border:1.5px solid var(--line);padding:0 .5em;background:var(--bg)}
+
+/* ---------- live machine ---------- */
+.machine{border:2px solid var(--line);background:var(--card);padding:clamp(1rem,3vw,1.7rem)}
+.vers{display:flex;flex-wrap:wrap;gap:.5rem;margin:0 0 1.2rem;padding:0;border:0}
+.vers legend{font:400 .8rem/1.4 var(--mono);color:var(--ink-2);padding:0;margin-bottom:.5rem}
+.vers label{cursor:pointer}
+.vers input{position:absolute;opacity:0;pointer-events:none}
+.vers span{display:block;border:2px solid var(--line);padding:.45rem .8rem;font:700 .95rem/1.2 var(--mono);background:var(--bg)}
+.vers span small{display:block;font:400 .72rem/1.3 var(--mono);color:var(--ink-2)}
+.vers input:checked+span{background:var(--ink);color:var(--bg)}
+.vers input:checked+span small{color:inherit;opacity:.8}
+.vers input:focus-visible+span{outline:3px solid var(--blue);outline-offset:3px}
+.btn{font:700 1rem/1 var(--mono);background:var(--yellow);color:var(--fixed-ink);border:2px solid var(--fixed-ink);padding:.85rem 1.2rem;cursor:pointer;box-shadow:4px 4px 0 var(--ink)}
+.btn:hover{transform:translate(-1px,-1px);box-shadow:5px 5px 0 var(--ink)}
+.btn:active{transform:translate(3px,3px);box-shadow:1px 1px 0 var(--ink)}
+.btn[disabled]{opacity:.55;cursor:progress;transform:none;box-shadow:4px 4px 0 var(--ink)}
+.strip{display:flex;flex-wrap:wrap;gap:.45rem;margin:1.4rem 0 .4rem;padding:0;list-style:none;min-height:3.4rem}
+.strip li{position:relative;background:var(--bg);border:2px solid var(--line);font:400 1.05rem/1 var(--mono);padding:.7rem 1.35rem .7rem .7rem;min-width:3.4rem}
+.strip li::after{content:"";position:absolute;top:.35rem;right:.35rem;width:.62rem;height:.62rem;border-radius:50%;background:var(--c,var(--soft));border:1px solid var(--line)}
+.strip li.start{border-style:dashed;color:var(--ink-2)}
+.strip li.x{background:var(--red);color:#fff;border-color:var(--red)}
+@media (prefers-reduced-motion:no-preference){.strip li.new{animation:pop .28s ease-out}@keyframes pop{from{transform:translateY(8px);opacity:0}}}
+.tray{margin:1rem 0 0;padding:.9rem 1rem;border:2px dashed var(--line);min-height:5.2rem}
+.tray h4{font:400 .78rem/1.5 var(--mono);color:var(--ink-2);margin:0 0 .5rem}
+.tray ul{display:flex;flex-wrap:wrap;gap:.35rem;margin:0;padding:0;list-style:none}
+.tray li{font:400 .88rem/1 var(--mono);padding:.4em .6em;border:1.5px solid var(--line);background:var(--bg)}
+.tray li.pick{background:var(--ink);color:var(--bg)}
+.tray li i{font-style:normal;opacity:.7;margin-left:.3em}
+.result{margin:1.2rem 0 0;font:italic 400 clamp(1.3rem,3vw,1.75rem)/1.35 var(--serif);min-height:2.7em;max-width:34ch}
+.verdict{font:400 .85rem/1.5 var(--mono);color:var(--ink-2);margin:.3rem 0 0;max-width:60ch}
+.prov{font:400 .8rem/1.5 var(--mono);color:var(--ink-2);margin:.2rem 0 0;max-width:none}
+.legend{display:flex;flex-wrap:wrap;gap:.4rem .9rem;margin:1rem 0 0;padding:0;list-style:none;font:400 .75rem/1.4 var(--mono);color:var(--ink-2)}
+.legend i{display:inline-block;width:.7rem;height:.7rem;border-radius:50%;background:var(--c);border:1px solid var(--line);margin-right:.35rem;vertical-align:-1px}
+.legend .sq{border-radius:0}
+
+/* ---------- kit ---------- */
+.gal{display:grid;gap:clamp(.8rem,2vw,1.4rem);grid-template-columns:repeat(auto-fit,minmax(min(100%,15rem),1fr))}
+.gal.two{grid-template-columns:repeat(auto-fit,minmax(min(100%,20rem),1fr))}
+.tablewrap{overflow-x:auto;border:2px solid var(--line);background:var(--card)}
+table{border-collapse:collapse;width:100%;min-width:36rem;font-size:.98rem;line-height:1.4}
+th,td{text-align:left;vertical-align:top;padding:.6rem .8rem;border-bottom:1px solid var(--soft)}
+th{font:700 .78rem/1.3 var(--mono);border-bottom:2px solid var(--line);background:var(--bg)}
+td:first-child{font-family:var(--mono);font-size:.85rem;white-space:nowrap}
+tr:last-child td{border-bottom:0}
+
+/* ---------- rehearsal ---------- */
+.grow{display:grid;gap:.9rem;margin:0;padding:0;list-style:none}
+.grow li{display:grid;grid-template-columns:3.2rem minmax(0,1fr);gap:.2rem .8rem;align-items:center}
+.grow .v{font:700 1rem/1 var(--mono)}
+.bar{display:flex;height:2.1rem;border:2px solid var(--line);background:var(--bg)}
+.bar span{height:100%;background:var(--c);border-right:1px solid var(--line)}
+.bar span:last-child{border-right:0}
+.grow .t{grid-column:2;font:400 .78rem/1.4 var(--mono);color:var(--ink-2)}
+.outs{margin:0;padding:0;list-style:none;border-top:2px solid var(--line)}
+.outs li{display:grid;grid-template-columns:5.2rem minmax(0,1fr);gap:.2rem 1rem;padding:.8rem 0;border-bottom:1px solid var(--soft)}
+.outs .id{font:400 .8rem/1.6 var(--mono);color:var(--ink-2)}
+.outs q{font:italic 400 1.2rem/1.4 var(--serif);quotes:"\00ab" "\00bb"}
+.outs .tag{grid-column:2;font:400 .78rem/1.4 var(--mono);color:var(--ink-2)}
+.note{border:2px solid var(--line);background:var(--card);padding:1rem 1.2rem;max-width:62ch}
+.note p{margin:0;font-size:1rem;line-height:1.5}
+.note strong{font-family:var(--mono);font-size:.85rem}
+
+/* ---------- then / now ---------- */
+.shift{display:grid;gap:0;border:2px solid var(--line);background:var(--card)}
+.shift>div{display:grid;grid-template-columns:minmax(0,1fr);gap:.4rem 2rem;padding:1rem 1.2rem;border-bottom:1px solid var(--soft)}
+.shift>div:last-child{border-bottom:0}
+@media (min-width:760px){.shift>div{grid-template-columns:8rem minmax(0,1fr) minmax(0,1fr)}.shift .hd{display:grid}}
+.shift h4{font:700 .85rem/1.4 var(--mono);margin:0}
+.shift p{margin:0;font-size:1rem;line-height:1.5}
+.shift .was{color:var(--ink-2)}
+.shift .tag{font:400 .72rem/1.4 var(--mono);color:var(--ink-2);display:block;margin-bottom:.15rem}
+@media (min-width:760px){.shift .tag{display:none}.shift .hd .tag{display:block;margin:0}}
+.shift .hd{background:var(--bg);border-bottom:2px solid var(--line)}
+.shift .hd span{font:700 .78rem/1.3 var(--mono)}
+@media (max-width:759px){.shift .hd{display:none}}
+
+/* ---------- research / talk / credits ---------- */
+.big-q{margin:0 0 1.6rem;font:700 clamp(1.2rem,2.6vw,1.7rem)/1.3 var(--mono);letter-spacing:-.015em;max-width:36ch;text-wrap:balance}
+.big-q cite{display:block;font:400 .8rem/1.5 var(--mono);color:var(--ink-2);margin-top:.7rem;letter-spacing:0}
+.talk-slot{border:3px dashed var(--line);padding:clamp(1.1rem,3vw,2rem);background:var(--card);max-width:46rem}
+.talk-slot .blank{font:700 clamp(1.6rem,5vw,2.6rem)/1.2 var(--mono);margin:0 0 .8rem;max-width:none}
+.talk-slot .blank u{display:inline-block;min-width:6ch;border-bottom:3px solid var(--line);text-decoration:none;color:var(--ink-2)}
+.talk-slot.live{border-style:solid;border-color:var(--blue)}
+.slots{display:grid;gap:1.2rem;margin-top:1.4rem}
+.slot-btn{display:inline-block;background:var(--blue);color:#fff;font:700 1rem/1.2 var(--mono);padding:.9rem 1.3rem;text-decoration:none;border:2px solid var(--fixed-ink);box-shadow:4px 4px 0 var(--ink)}
+.slot-btn:hover{text-decoration:none;transform:translate(-1px,-1px);box-shadow:5px 5px 0 var(--ink)}
+.slot-btn.alt{background:var(--yellow);color:var(--fixed-ink)}
+.credits{display:grid;gap:1.4rem 3rem;grid-template-columns:repeat(auto-fit,minmax(16rem,1fr))}
+.credits h3{margin-bottom:.4rem}
+.credits p{font-size:1rem;line-height:1.5}
+footer{padding-block:2rem 3rem;border-top:2px solid var(--line);font:400 .8rem/1.7 var(--mono);color:var(--ink-2)}
+footer p{max-width:none;margin:0}
+.slots:empty{display:none}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+
+
+<div class="wrap">
+
+<header class="hero">
+  <p class="hero-meta">Broncode<i>·</i>KB × AIxDESIGN<i>·</i>29.10.2026<i>·</i>Erasmuszaal</p>
+  <h1><span>De</span><span>Papieren</span><mark>Machine</mark></h1>
+  <p class="hero-sub">Een taalmodel van papier.<small>A language model made of paper.</small></p>
+  <div class="deal" aria-hidden="true">
+    <div class="wc">de <b>→</b> papieren</div>
+    <div class="wc">papieren <b>→</b> machine</div>
+    <div class="wc">machine <b>→</b> .</div>
+  </div>
+  <p class="hero-foot"><span style="white-space:nowrap">Agustín Martínez Caram</span><i>/</i><span style="white-space:nowrap">Talk 19:15</span><i>/</i><span style="white-space:nowrap">Workshop 19:45–21:45</span></p>
+</header>
+
+<nav aria-label="Sections">
+  <ul class="toc">
+    <li><a href="#idea">The idea</a></li>
+    <li><a href="#stations">Three stations</a></li>
+    <li><a href="#try">Try the machine</a></li>
+    <li><a href="#kit">The print kit</a></li>
+    <li><a href="#rehearsal">Dry run</a></li>
+    <li><a href="#shift">From proposal to print</a></li>
+    <li><a href="#research">The doctorate</a></li>
+    <li class="tbd"><a href="#talk">Talk</a></li>
+  </ul>
+</nav>
+
+<main>
+
+<!-- ============ IDEA ============ -->
+<section class="sec" id="idea">
+  <div class="cols">
+    <h2>A language model you can hold</h2>
+    <div class="stack">
+      <p class="lead">Every card in this machine says one thing only: <mark class="hl">after this word came that word.</mark></p>
+      <p>The cards are copied by hand from Dutch newspapers printed before 1880, from the KB’s Delpher. Sort enough of them into trays and the pile can speak: draw a card blind, read the next word, look that word up, draw again. What comes out sounds like an 1840s newspaper and means nothing. Everyone in the room knows exactly where each word came from.</p>
+      <p>The machine looks exactly one word back. That makes it a bigram model, the smallest language model there is. In 1948 Claude Shannon built the same thing with a book and a pencil and published it as a “second-order word approximation” of English. Chatbots make the same kind of prediction, but look thousands of words back and keep what they learned as numbers instead of cards.</p>
+      <blockquote class="pull">
+        Een bibliotheek bewaart, zodat er later gekozen kan worden. Een trainingsset kiest eerst.
+        <span class="nl">A library keeps things so they can be chosen later. A training set chooses first.</span>
+      </blockquote>
+      <dl class="facts">
+        <div><dt>When</dt><dd>Thu 29 October 2026<span>Festival 18:00–22:00</span></dd></div>
+        <div><dt>Talk</dt><dd>19:15<span>Artist talk</span></dd></div>
+        <div><dt>Workshop</dt><dd>19:45–21:45<span>No screens, no power</span></dd></div>
+        <div><dt>Where</dt><dd>Erasmuszaal<span>KB, National Library of the Netherlands, The Hague</span></dd></div>
+        <div><dt>Who</dt><dd>Groups of 4<span>English facilitation, Dutch material, no Dutch needed</span></dd></div>
+      </dl>
+      <p class="small">Part of <a href="https://www.kb.nl/en/agenda/source-code-language-age-ai" target="_blank" rel="noopener">Broncode / Source Code: Language in the Age of AI</a>, the festival that opens the KB exhibition <em>Source Code: Books in the Age of AI</em>, co-curated with AIxDESIGN. The workshop is also part of a doctorate on AI and data literacy: <a href="#research">where it sits in the research</a>.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ STATIONS ============ -->
+<section class="sec" id="stations">
+  <div class="cols">
+    <h2>Three stations, one machine</h2>
+    <div class="stack">
+      <p class="lead">Each station is one step of how a language model gets made, done by hand and slowly enough to see the decisions.</p>
+      <p>Groups of four wait at the reading stand, get collected, and receive a clipboard. The clipboard says which version they are: v01, v02, up to v10. Every group trains its version on top of the cards of the groups before it, so the machine knows a little more each time. Then they work through the stations below.</p>
+    </div>
+  </div>
+
+  <div class="stations" style="margin-top:clamp(1.8rem,4vw,3rem)">
+
+    <article class="station s1">
+      <div class="st-head"><span class="n">1</span><h3>De bron<small>The source: choose, label, write out</small></h3></div>
+      <div class="st-body">
+        <div>
+          <ol>
+            <li>Pick a newspaper page and a short sentence, 12 words at most.</li>
+            <li>Decide what kind of text it is: one of five colours.</li>
+            <li>Copy the sentence as word pairs, one pair per card, from full stop to full stop. A full stop and a comma are words too.</li>
+            <li>Write your version on every card and fill in the model card.</li>
+          </ol>
+          <ul class="kinds" aria-label="The five kinds of text">
+            <li class="kind k-f">Familieberichten</li><li class="kind k-a">Advertenties</li><li class="kind k-s">Scheepvaart</li><li class="kind k-m">Markt &amp; weer</li><li class="kind k-n">Nieuws</li>
+          </ul>
+          <div class="real">
+            <h4>In a real model: corpus, labels, tokenisation</h4>
+            <p>You chose the data. Someone has to say what kind of data it is. Someone decided a comma is a word. The house rules here: lowercase, numbers in letters, spelling as printed, nothing corrected. “Someone decided them; these, I decided.”</p>
+          </div>
+          <div class="real">
+            <h4>You decide</h4>
+            <p>Newspapers more than 140 years old contain racist and colonial language, advertisements included. Copy such a sentence or leave it out? Whatever goes in, the machine may later say aloud. Participants decide and note it on their model card.</p>
+          </div>
+        </div>
+        <figure class="fig"><a href="img/station-1.jpg" target="_blank" rel="noopener"><img src="img/station-1.jpg" width="1500" height="1061" loading="lazy" alt="A3 station sheet 1, De bron: six numbered steps, the five text kinds, house rules for tokenisation and a worked example, in Dutch and English"></a><figcaption>A3 station sheet 1, bilingual. Tap to open full size.</figcaption></figure>
+      </div>
+    </article>
+
+    <article class="station s2">
+      <div class="st-head"><span class="n">2</span><h3>De machine<small>Feed the machine: sort, count</small></h3></div>
+      <div class="st-body">
+        <div>
+          <ol>
+            <li>Look at the first word on your card.</li>
+            <li>Does that word have its own tray? Stand the card in it, at the back.</li>
+            <li>If not, file it in the catalogue, A–Z, with the cards that start with the same word.</li>
+            <li>Is your pair already there? Add it anyway. Every card counts.</li>
+          </ol>
+          <p class="small" style="margin-bottom:.2rem">The head: eighteen words that get a tray of their own.</p>
+          <ul class="trays" aria-label="The eighteen head trays"><li>.</li><li>,</li><li>de</li><li>van</li><li>het</li><li>en</li><li>in</li><li>een</li><li>te</li><li>den</li><li>der</li><li>op</li><li>met</li><li>voor</li><li>die</li><li>is</li><li>;</li><li>:</li></ul>
+          <div class="real">
+            <h4>In a real model: training</h4>
+            <p>Training is counting what follows what. The previous word decides which tray you open, and inside it every card counts: if <em>stad</em> followed three times and <em>zee</em> once, the machine will say <em>stad</em> three times as often. It understands nothing. It only remembers the word before.</p>
+          </div>
+        </div>
+        <figure class="fig"><a href="img/station-2.jpg" target="_blank" rel="noopener"><img src="img/station-2.jpg" width="1500" height="1061" loading="lazy" alt="A3 station sheet 2, De machine: steps for sorting cards into eighteen head trays and an alphabetical catalogue, with notes on chance, training and versions"></a><figcaption>A3 station sheet 2: the head trays and the catalogue.</figcaption></figure>
+      </div>
+    </article>
+
+    <article class="station s3">
+      <div class="st-head"><span class="n">3</span><h3>De machine spreekt<small>The machine speaks: draw blind, word after word</small></h3></div>
+      <div class="st-body">
+        <div>
+          <ol>
+            <li>Take a strip. Write the version and the time on it.</li>
+            <li>Start at the “.” tray, because every sentence starts after a full stop. Eyes closed, take one card.</li>
+            <li>Write the word after the arrow in the first box and colour the dot in the card’s colour.</li>
+            <li>Put the card back. Look up the word you just wrote, draw again, repeat.</li>
+            <li>At a full stop the sentence is done. Read it aloud, hang it on the line, take a card home.</li>
+          </ol>
+          <div class="real">
+            <h4>In a real model: sampling</h4>
+            <p>Do your dots change colour halfway? Your sentence jumped from one kind of text to another, exactly at a word both of them use.</p>
+          </div>
+          <div class="real">
+            <h4>Two silences</h4>
+            <p><strong>Excluded:</strong> what nobody highlighted. It is still on the pages.<br><strong>Available but unsaid:</strong> the cards in the tray you did not draw.</p>
+          </div>
+        </div>
+        <figure class="fig"><a href="img/station-3.jpg" target="_blank" rel="noopener"><img src="img/station-3.jpg" width="1500" height="1061" loading="lazy" alt="A3 station sheet 3, De machine spreekt: steps for drawing cards blind and writing the sentence on a strip, with notes on colours, two silences and Shannon in 1948"></a><figcaption>A3 station sheet 3, including the note on Shannon, 1948.</figcaption></figure>
+      </div>
+    </article>
+
+  </div>
+</section>
+
+<!-- ============ TRY ============ -->
+<section class="sec" id="try">
+  <div class="cols">
+    <h2>Try the machine</h2>
+    <div class="stack">
+      <p class="lead">The same procedure, run on screen.</p>
+      <p>These are the real cards from the dry run of 25 October: sixteen <em>simulated</em> participants, three newspaper pages from 1849, 1862 and 1873, four versions. Pick a version and draw. Version 1 knows four sentences, version 4 knows sixteen. Even the first splices sentences together at the words they share; by version 4 there are many more places to splice.</p>
+
+      <div class="machine">
+        <fieldset class="vers">
+          <legend>Which version of the machine?</legend>
+          <label><input type="radio" name="ver" value="1"><span>v01<small>32 cards</small></span></label>
+          <label><input type="radio" name="ver" value="2"><span>v02<small>74 cards</small></span></label>
+          <label><input type="radio" name="ver" value="3"><span>v03<small>108 cards</small></span></label>
+          <label><input type="radio" name="ver" value="4" checked><span>v04<small>142 cards</small></span></label>
+        </fieldset>
+        <button class="btn" id="draw" type="button">Draw a sentence</button>
+
+        <ul class="strip" id="strip" aria-hidden="true"><li class="start">.</li></ul>
+        <div class="tray" id="tray"><h4 id="tray-h">The tray you open depends on the previous word.</h4><ul id="tray-l"></ul></div>
+
+        <p class="result" id="result" aria-live="polite"></p>
+        <p class="verdict" id="verdict"></p>
+        <p class="prov" id="prov"></p>
+        <ul class="legend" aria-label="Colour key">
+          <li><i style="--c:var(--lilac)"></i>Nieuws</li>
+          <li><i style="--c:var(--teal)"></i>Scheepvaart</li>
+          <li><i style="--c:var(--yellow)"></i>Markt &amp; weer</li>
+          <li><i style="--c:var(--orange)"></i>Advertenties</li>
+        </ul>
+      </div>
+      <p class="small">Simulated participants, not a live workshop. Sources: Nieuwe Rotterdamsche Courant, 17 Feb 1849, p. 1 · Dagblad van Zuidholland, 15 Jan 1862, p. 3 · Java-Bode, 29 Aug 1873, p. 4 (all via Delpher, KB). The page runs the paper procedure literally: start at the full stop, pick a card at random from the tray of the last word, stop at the next full stop.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ KIT ============ -->
+<section class="sec" id="kit">
+  <div class="cols">
+    <h2>The print kit</h2>
+    <div class="stack">
+      <p class="lead">Everything the room touches is designed, bilingual and ready to print: print set V4.4, 25 October 2026.</p>
+      <p>One visual system runs through all of it: five pastel colours for five kinds of text, a mono face for the machine and a serif for the human voice, on black and paper. It is printed in colour on 120–250 g paper and cut by hand or on a guillotine.</p>
+
+      <div class="gal two">
+        <figure class="fig"><a href="img/reading-stand-1.jpg" target="_blank" rel="noopener"><img src="img/reading-stand-1.jpg" width="1100" height="1556" loading="lazy" alt="A3 reading stand, page 1: the title De Papieren Machine, three steps and the five colours"></a><figcaption>A3 reading stand, side 1: what this is, how to join, the five colours.</figcaption></figure>
+        <figure class="fig"><a href="img/reading-stand-2.jpg" target="_blank" rel="noopener"><img src="img/reading-stand-2.jpg" width="1100" height="1556" loading="lazy" alt="A3 reading stand, page 2: collection policy, what this machine reads and what it does not"></a><figcaption>A3 reading stand, side 2: the collection policy. What this machine reads, and what it never will.</figcaption></figure>
+      </div>
+
+      <h3 style="margin-top:2.4rem">The model card</h3>
+      <p>Each clipboard sheet is a model card, the documentation real AI models come with. It records the version, what it builds on, the training data (newspaper and date), the kind of text, the number of cards, what was left out on purpose, the knowledge cutoff (the year of the newspaper), the known limitations, and who built it. Under <em>known limitations</em> it says: <em>remembers only the previous word, cannot read, repeats word for word where it knows little, never says a word nobody wrote first.</em></p>
+
+      <div class="gal">
+        <figure class="fig"><a href="img/clipboard-v01.jpg" target="_blank" rel="noopener"><img src="img/clipboard-v01.jpg" width="1000" height="1415" loading="lazy" alt="Clipboard sheet v01: the three stations in short and a model card to fill in"></a><figcaption>Clipboard sheet v01, with its model card.</figcaption></figure>
+        <figure class="fig"><a href="img/word-cards.jpg" target="_blank" rel="noopener"><img src="img/word-cards.jpg" width="1000" height="1415" loading="lazy" alt="A sheet of pink Familieberichten word cards, eight per sheet, to be cut apart"></a><figcaption>Word cards: eight to a sheet, one colour per kind of text. Pink is Familieberichten.</figcaption></figure>
+        <figure class="fig"><a href="img/strips.jpg" target="_blank" rel="noopener"><img src="img/strips.jpg" width="1300" height="920" loading="lazy" alt="Output strips with boxes for the words the machine draws and a dot for each card's colour"></a><figcaption>Output strips: a box per word, a coloured dot per card.</figcaption></figure>
+      </div>
+
+      <h3 style="margin-top:2.4rem">Print list</h3>
+      <div class="tablewrap" role="region" aria-label="Print list" tabindex="0">
+        <table>
+          <thead><tr><th>Item</th><th>Size and paper</th><th>Quantity</th></tr></thead>
+          <tbody>
+            <tr><td>Reading stand</td><td>A3, 200 g</td><td>1 of each page: intro, and collection policy</td></tr>
+            <tr><td>Station sheets</td><td>A3 landscape, 200 g or in sleeves</td><td>1 each of stations 1, 2, 3</td></tr>
+            <tr><td>Clipboard sheets</td><td>A4, 120 g</td><td>v01 to v10, 4 per version = 40 pages, plus 12 blanks</td></tr>
+            <tr><td>Word cards</td><td>A4, white card 200–250 g</td><td>600 in five colours, plus 120 plain spares</td></tr>
+            <tr><td>Strips</td><td>A4 landscape, 120–160 g</td><td>60 strips, 3 per sheet</td></tr>
+            <tr><td>Head trays</td><td>A4 card, 250 g</td><td>10 sheets, 2 trays per sheet; folded by hand to 111 × 45 × 42 mm</td></tr>
+            <tr><td>Take-away cards</td><td>A4, card 200 g</td><td>60, in Dutch and English</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="small">The take-away card sends people home with their sentence, the version and time, and a way to repeat it: a book and a pencil, the way Shannon did.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ DRY RUN ============ -->
+<section class="sec" id="rehearsal">
+  <div class="cols">
+    <h2>Dry run: four groups, four versions</h2>
+    <div class="stack">
+      <p class="lead">Before anyone touches paper, the whole procedure was run digitally to see whether it holds.</p>
+      <div class="note"><p><strong>This is a simulation.</strong> Sixteen simulated participants worked on three real newspaper pages. It tests the procedure; it is not a measured live workshop. Outputs were kept as first sampled, without reselection.</p></div>
+
+      <h3 style="margin-top:2rem">The machine grows, and its voice changes</h3>
+      <ul class="grow" aria-label="Cards per version, by kind of text">
+        <li><span class="v">v01</span><div class="bar" role="img" aria-label="32 cards: 6 markt en weer, 9 scheepvaart, 17 nieuws"><span style="--c:var(--yellow);flex:6"></span><span style="--c:var(--teal);flex:9"></span><span style="--c:var(--lilac);flex:17"></span></div><span class="t">32 cards · from nothing</span></li>
+        <li><span class="v">v02</span><div class="bar" role="img" aria-label="74 cards: 14 markt en weer, 9 scheepvaart, 51 nieuws"><span style="--c:var(--yellow);flex:14"></span><span style="--c:var(--teal);flex:9"></span><span style="--c:var(--lilac);flex:51"></span></div><span class="t">74 cards · +42</span></li>
+        <li><span class="v">v03</span><div class="bar" role="img" aria-label="108 cards: 22 markt en weer, 9 scheepvaart, 77 nieuws"><span style="--c:var(--yellow);flex:22"></span><span style="--c:var(--teal);flex:9"></span><span style="--c:var(--lilac);flex:77"></span></div><span class="t">108 cards · +34</span></li>
+        <li><span class="v">v04</span><div class="bar" role="img" aria-label="142 cards: 22 markt en weer, 9 scheepvaart, 98 nieuws, 13 advertenties"><span style="--c:var(--yellow);flex:22"></span><span style="--c:var(--teal);flex:9"></span><span style="--c:var(--lilac);flex:98"></span><span style="--c:var(--orange);flex:13"></span></div><span class="t">142 cards · +34</span></li>
+      </ul>
+      <ul class="legend" aria-label="Colour key for the bars"><li><i class="sq" style="--c:var(--yellow)"></i>Markt &amp; weer</li><li><i class="sq" style="--c:var(--teal)"></i>Scheepvaart</li><li><i class="sq" style="--c:var(--lilac)"></i>Nieuws</li><li><i class="sq" style="--c:var(--orange)"></i>Advertenties</li></ul>
+      <p class="small">Bars are drawn in proportion to the cards in each version. Shipping stays at nine cards from v01 to v04: nobody added to it, so the machine never learns more about ships.</p>
+
+      <h3 style="margin-top:2rem">What it said</h3>
+      <ul class="outs">
+        <li><span class="id">v01 · P01</span><q>Die weg dient door haar te worden gevolgd.</q><span class="tag">An exact copy of another participant’s sentence. With little to choose from, the machine repeats.</span></li>
+        <li><span class="id">v01 · P04</span><q>Ook de kamer is gewapend met het zwaarste stuk geschut.</q><span class="tag">Three input sentences meet at the words <em>de</em> and <em>is</em> and become one.</span></li>
+        <li><span class="id">v02 · P06</span><q>Hierover ontstaat eenige discussie, doch dit verlof te verleenen.</q><span class="tag">A report of a debate and a request for leave, spliced at the word <em>dit</em>.</span></li>
+        <li><span class="id">v03 · P12</span><q>De senaat heeft gisteren de interpellatie is wassende.</q><span class="tag">A senate vote, an interpellation and a river report in one sentence.</span></li>
+        <li><span class="id">v04 · P14</span><q>De heer Sloet bekwam vierentwintig, staande aan de hoogstraat.</q><span class="tag">An election result continues into a property advertisement. The number rule works in generation too.</span></li>
+      </ul>
+      <p class="small">Of the sixteen outputs, two were exact copies and fourteen were new combinations.</p>
+
+      <div class="gal" style="margin-top:1rem">
+        <figure class="fig"><a href="img/dryrun-summary.jpg" target="_blank" rel="noopener"><img src="img/dryrun-summary.jpg" width="1000" height="1415" loading="lazy" alt="Dry run report, page 1: table of versions v01 to v04 with cards added and total cards, and the sixteen outputs"></a><figcaption>The dry-run report: versions, cards, outputs.</figcaption></figure>
+        <figure class="fig"><a href="img/dryrun-card-p03.jpg" target="_blank" rel="noopener"><img src="img/dryrun-card-p03.jpg" width="1000" height="1415" loading="lazy" alt="A filled-in model card from the dry run for one simulated participant"></a><figcaption>A model card, filled in for a simulated participant.</figcaption></figure>
+        <figure class="fig"><a href="img/dryrun-strips.jpg" target="_blank" rel="noopener"><img src="img/dryrun-strips.jpg" width="1000" height="708" loading="lazy" alt="Filled output strips from the dry run, with coloured dots"></a><figcaption>Filled strips: where the dots change colour, the sentence jumped between kinds of text.</figcaption></figure>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PROPOSAL -> PRINT SET ============ -->
+<section class="sec" id="shift">
+  <div class="cols">
+    <h2>From proposal to print set</h2>
+    <div class="stack">
+      <p class="lead">The open-call proposal came first. Making it physical changed it.</p>
+      <p><strong>Kept:</strong> paper only, no screens and no power; public-domain Dutch newspapers from before 1880; the decisions of a language-model pipeline made visible by doing them by hand; Shannon’s 1948 experiment as the engine; English facilitation over Dutch material.</p>
+      <div class="shift">
+        <div class="hd"><span></span><span>Open-call proposal</span><span>Print set V4.4</span></div>
+        <div><h4>Format</h4>
+          <p class="was"><span class="tag">Proposal</span>Three hours for 16 people at four tables, in the KB Atelier.</p>
+          <p><span class="tag">Print set</span>An evening workshop, 19:45–21:45, after the 19:15 talk, in the Erasmuszaal. Groups of four are collected one after another.</p></div>
+        <div><h4>Stages</h4>
+          <p class="was"><span class="tag">Proposal</span>Four: corpus, tokenise, label, predict.</p>
+          <p><span class="tag">Print set</span>Three stations: de bron (choose, label, write out), de machine (feed it), de machine spreekt (let it speak).</p></div>
+        <div><h4>Labelling</h4>
+          <p class="was"><span class="tag">Proposal</span>Four labellers on one document: three historical KB vocabularies and a 2026 data annotator with twenty seconds and no field for “I don’t know”.</p>
+          <p><span class="tag">Print set</span>One gesture: pick one of five colours for the kind of text. Not sure? Choose anyway. That is labelling.</p></div>
+        <div><h4>The newspaper</h4>
+          <p class="was"><span class="tag">Proposal</span>Tables read a column through a paper mask, transcribe it, and cut printed copies into word-pair scraps.</p>
+          <p><span class="tag">Print set</span>Participants highlight one sentence of up to 12 words on a printed page, in the colour for its kind of text, and copy it as word pairs onto cards.</p></div>
+        <div><h4>Memory</h4>
+          <p class="was"><span class="tag">Proposal</span>Each table builds its own model from its own 30 pages.</p>
+          <p><span class="tag">Print set</span>One machine that grows: v01 to v10, each group on top of the last, every card stamped with its version.</p></div>
+        <div><h4>What is lost</h4>
+          <p class="was"><span class="tag">Proposal</span>A discard box all evening, emptied onto the floor and pegged across the Atelier window.</p>
+          <p><span class="tag">Print set</span>Two named silences, a model card that states what was left out on purpose, and a line of the sentences the machine said.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ RESEARCH ============ -->
+<section class="sec" id="research">
+  <div class="cols">
+    <h2>Where it sits in the doctorate</h2>
+    <div class="stack">
+      <blockquote class="big-q">Participatory artistic situations can make AI and data systems perceptible, interpretable and open to situated response.<cite>Research framing, from the doctoral trajectory</cite></blockquote>
+      <p>The doctorate is a Professional Doctorate in Arts + Creative at Hanze University of Applied Sciences (2023–2027). In the portfolio it is called <em>AI &amp; Data Literacy through Artistic Research Environments</em>. It works through four participatory settings, the AT-LABs: body and health, classroom, city, and planet. Each one inherits what the one before it taught, and each follows the same cycle of design, intervention, reading, reflection and feed-forward.</p>
+      <p>The Paper Machine takes that method into a public room. A language model is a chain of human decisions: which text goes in, how it is cut into units, what kind of text it counts as, what comes next. Here a room of festival visitors makes each of those decisions with a highlighter and a pencil, on the library’s own newspapers, slowly enough to see them. They leave with a sentence the machine said and a model card that records what it was built from and what was left out. The point is not that AI is a library. It is that both are made of choices someone made and then stopped being able to see.</p>
+      <p>What the format asks is whether people with no AI background, and mostly no Dutch, can read a system by making a small one. Not understanding the Dutch is deliberate: it is the most accurate simulation of the thing being studied, because a model does not read, it counts what follows what. It is a new format, designed for this festival, and its first run is on 29 October. What it shows is still to be learned.</p>
+      <p><a href="https://jannacek.github.io/october-2/" target="_blank" rel="noopener">The full doctoral trajectory</a></p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ TALK ============ -->
+<section class="sec" id="talk">
+  <div class="cols">
+    <h2>The talk</h2>
+    <div class="stack">
+      <p class="lead">The artist talk opens the evening at 19:15, half an hour before the workshop.</p>
+      <!--
+        ================================================================
+        HOW TO ADD THE TALK LINK
+        Open the script at the bottom of this file and paste the address
+        of your slides, PDF or video between the quotes of TALK_URL.
+        Do the same with DOC_URL for photos of the evening. Then republish.
+        ================================================================
+      -->
+      <div class="talk-slot" id="talk-slot">
+        <p class="blank" id="talk-blank">Talk: <u>link follows</u></p>
+        <p id="talk-text" style="margin:0">The slides will be linked here as soon as the talk is finished.</p>
+        <div class="slots" id="talk-buttons"></div>
+      </div>
+      <div class="talk-slot" id="doc-slot" style="border-width:2px">
+        <p id="doc-text" style="margin:0"><strong class="mono" style="font-size:.9rem">Documentation</strong><br>Photos and notes from the evening will be added after 29 October.</p>
+        <div class="slots" id="doc-buttons"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CREDITS ============ -->
+<section class="sec" id="credits">
+  <div class="cols">
+    <h2>Context and credits</h2>
+    <div class="credits">
+      <div>
+        <h3>Made by</h3>
+        <p>Agustín Martínez Caram, an Argentinian artist, researcher and educator based in Amsterdam who works with sound, light and computation. Professional Doctorate candidate at Hanze University of Applied Sciences, researching AI and data literacy through artistic research.</p>
+        <p><a href="https://martinezcaram.com" target="_blank" rel="noopener">martinezcaram.com</a><br><a href="https://www.instagram.com/agus.ti_n/" target="_blank" rel="noopener">@agus.ti_n</a></p>
+      </div>
+      <div>
+        <h3>Where</h3>
+        <p><a href="https://www.kb.nl/en/agenda/source-code-language-age-ai" target="_blank" rel="noopener">Broncode / Source Code: Language in the Age of AI</a>, 29 October 2026, 18:00–22:00. A festival by the KB, National Library of the Netherlands, with co-curator AIxDESIGN, opening the exhibition <em>Source Code: Books in the Age of AI</em>.</p>
+      </div>
+      <div>
+        <h3>Material</h3>
+        <p>Dutch newspapers via Delpher, the KB’s digitised collection. Only public-domain pages from before 1880 are used, following the KB’s own 140-year rule. Participants highlight printed copies; the newspapers themselves are not cut up.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <p>De Papieren Machine / The Paper Machine · Agustín Martínez Caram · 2026</p>
+  <p>Status on 25 October 2026: print set finished, dry run done, event on 29 October.</p>
+</footer>
+
+</div>
+<script>
+/* =====================================================================
+   EDIT HERE: the talk and documentation links.
+   Paste an address between the quotes, then republish the page.
+   Leave a link empty ("") and the page shows a "link follows" placeholder.
+   ===================================================================== */
+const TALK_URL   = "";                 // e.g. "https://martinezcaram.com/papieren-machine/slides/"
+const TALK_LABEL = "Open the slides";   // the button text, e.g. "Watch the recording"
+const TALK_NOTE  = "";                 // optional line shown above the button, e.g. "Slides, 29 October 2026"
+const DOC_URL    = "";                 // photos or film of the evening
+const DOC_LABEL  = "See the documentation";
+/* ===================================================================== */
+
+(function () {
+  /* ---- talk and documentation slots ---- */
+  function safeUrl(u) { return /^https?:\/\//i.test(u) ? u : ""; }
+  function addButton(box, url, label, cls) {
+    var a = document.createElement("a");
+    a.className = "slot-btn" + (cls ? " " + cls : "");
+    a.href = url; a.target = "_blank"; a.rel = "noopener"; a.textContent = label;
+    box.appendChild(a);
+  }
+  var talk = safeUrl(TALK_URL), doc = safeUrl(DOC_URL);
+  if (talk) {
+    var slot = document.getElementById("talk-slot");
+    slot.classList.add("live");
+    document.getElementById("talk-blank").hidden = true;
+    document.getElementById("talk-text").textContent = TALK_NOTE || "The talk that opened the evening.";
+    addButton(document.getElementById("talk-buttons"), talk, TALK_LABEL);
+    var tl = document.querySelector(".toc .tbd"); if (tl) tl.classList.remove("tbd");
+  }
+  if (doc) {
+    document.getElementById("doc-text").innerHTML = "<strong class=\"mono\" style=\"font-size:.9rem\">Documentation</strong><br>Photos and notes from the evening.";
+    addButton(document.getElementById("doc-buttons"), doc, DOC_LABEL, "alt");
+  }
+
+  /* ---- the paper machine, on screen ---- */
+  var SRC = { A: "Dagblad van Zuidholland 1862", B: "Java-Bode 1873", C: "Nieuwe Rotterdamsche Courant 1849" };
+  var COL = { m: "var(--yellow)", s: "var(--teal)", n: "var(--lilac)", a: "var(--orange)" };
+  const CARDS=[[".","ook",1,"m","P01","A"],["ook","de",1,"m","P01","A"],["de","waal",1,"m","P01","A"],["waal","is",1,"m","P01","A"],["is","wassende",1,"m","P01","A"],["wassende",".",1,"m","P01","A"],[".","het",1,"s","P02","B"],["het","is",1,"s","P02","B"],["is","gewapend",1,"s","P02","B"],["gewapend","met",1,"s","P02","B"],["met","het",1,"s","P02","B"],["het","zwaarste",1,"s","P02","B"],["zwaarste","stuk",1,"s","P02","B"],["stuk","geschut",1,"s","P02","B"],["geschut",".",1,"s","P02","B"],[".","de",1,"n","P03","B"],["de","kamer",1,"n","P03","B"],["kamer","is",1,"n","P03","B"],["is","tot",1,"n","P03","B"],["tot","nadere",1,"n","P03","B"],["nadere","bijeenroeping",1,"n","P03","B"],["bijeenroeping","gecheiden",1,"n","P03","B"],["gecheiden",".",1,"n","P03","B"],[".","die",1,"n","P04","C"],["die","weg",1,"n","P04","C"],["weg","dient",1,"n","P04","C"],["dient","door",1,"n","P04","C"],["door","haar",1,"n","P04","C"],["haar","te",1,"n","P04","C"],["te","worden",1,"n","P04","C"],["worden","gevolgd",1,"n","P04","C"],["gevolgd",".",1,"n","P04","C"],[".","wij",2,"m","P05","A"],["wij","zullen",2,"m","P05","A"],["zullen","dit",2,"m","P05","A"],["dit","met",2,"m","P05","A"],["met","een",2,"m","P05","A"],["een","voorbeeld",2,"m","P05","A"],["voorbeeld","ophelderen",2,"m","P05","A"],["ophelderen",".",2,"m","P05","A"],[".","hierover",2,"n","P06","C"],["hierover","ontstaat",2,"n","P06","C"],["ontstaat","eenige",2,"n","P06","C"],["eenige","discussie",2,"n","P06","C"],["discussie",",",2,"n","P06","C"],[",","doch",2,"n","P06","C"],["doch","dit",2,"n","P06","C"],["dit","voorstel",2,"n","P06","C"],["voorstel","heeft",2,"n","P06","C"],["heeft","geen",2,"n","P06","C"],["geen","verder",2,"n","P06","C"],["verder","gevolg",2,"n","P06","C"],["gevolg",".",2,"n","P06","C"],[".","de",2,"n","P07","C"],["de","heer",2,"n","P07","C"],["heer","sloet",2,"n","P07","C"],["sloet","bekwam",2,"n","P07","C"],["bekwam","vierentwintig",2,"n","P07","C"],["vierentwintig",",",2,"n","P07","C"],[",","de",2,"n","P07","C"],["de","heer",2,"n","P07","C"],["heer","mejan",2,"n","P07","C"],["mejan","een",2,"n","P07","C"],["een","stem",2,"n","P07","C"],["stem",".",2,"n","P07","C"],[".","de",2,"n","P08","B"],["de","voorzitter",2,"n","P08","B"],["voorzitter","stelt",2,"n","P08","B"],["stelt","voor",2,"n","P08","B"],["voor","dit",2,"n","P08","B"],["dit","verlof",2,"n","P08","B"],["verlof","te",2,"n","P08","B"],["te","verleenen",2,"n","P08","B"],["verleenen",".",2,"n","P08","B"],[".","de",3,"n","P09","B"],["de","interpellatie",3,"n","P09","B"],["interpellatie","is",3,"n","P09","B"],["is","hiermede",3,"n","P09","B"],["hiermede","afgeloopen",3,"n","P09","B"],["afgeloopen",".",3,"n","P09","B"],[".","ook",3,"m","P10","A"],["ook","in",3,"m","P10","A"],["in","boter",3,"m","P10","A"],["boter","wordt",3,"m","P10","A"],["wordt","niet",3,"m","P10","A"],["niet","veel",3,"m","P10","A"],["veel","gedaan",3,"m","P10","A"],["gedaan",".",3,"m","P10","A"],[".","de",3,"n","P11","C"],["de","senaat",3,"n","P11","C"],["senaat","heeft",3,"n","P11","C"],["heeft","gisteren",3,"n","P11","C"],["gisteren","de",3,"n","P11","C"],["de","pensioen-wet",3,"n","P11","C"],["pensioen-wet","aangenomen",3,"n","P11","C"],["aangenomen",".",3,"n","P11","C"],[".","het",3,"n","P12","C"],["het","berigt",3,"n","P12","C"],["berigt","nopens",3,"n","P12","C"],["nopens","een",3,"n","P12","C"],["een","opstand",3,"n","P12","C"],["opstand","te",3,"n","P12","C"],["te","modena",3,"n","P12","C"],["modena",",",3,"n","P12","C"],[",","wordt",3,"n","P12","C"],["wordt","niet",3,"n","P12","C"],["niet","bevestigd",3,"n","P12","C"],["bevestigd",".",3,"n","P12","C"],[".","een",4,"a","P13","A"],["een","winkelhuis",4,"a","P13","A"],["winkelhuis","en",4,"a","P13","A"],["en","erve",4,"a","P13","A"],["erve",",",4,"a","P13","A"],[",","staande",4,"a","P13","A"],["staande","aan",4,"a","P13","A"],["aan","de",4,"a","P13","A"],["de","oostzijde",4,"a","P13","A"],["oostzijde","van",4,"a","P13","A"],["van","de",4,"a","P13","A"],["de","hoogstraat",4,"a","P13","A"],["hoogstraat",".",4,"a","P13","A"],[".","daartoe",4,"n","P14","B"],["daartoe","wordt",4,"n","P14","B"],["wordt","zonder",4,"n","P14","B"],["zonder","stemming",4,"n","P14","B"],["stemming","besloten",4,"n","P14","B"],["besloten",".",4,"n","P14","B"],[".","generaal",4,"n","P15","C"],["generaal","chioco",4,"n","P15","C"],["chioco","is",4,"n","P15","C"],["is","tot",4,"n","P15","C"],["tot","minister",4,"n","P15","C"],["minister","van",4,"n","P15","C"],["van","oorlog",4,"n","P15","C"],["oorlog","benoemd",4,"n","P15","C"],["benoemd",".",4,"n","P15","C"],[".","dat",4,"n","P16","A"],["dat","verlang",4,"n","P16","A"],["verlang","ik",4,"n","P16","A"],["ik","ook",4,"n","P16","A"],["ook","niet",4,"n","P16","A"],["niet",".",4,"n","P16","A"]];
+  const INPUTS={"ook de waal is wassende .":"P01","het is gewapend met het zwaarste stuk geschut .":"P02","de kamer is tot nadere bijeenroeping gecheiden .":"P03","die weg dient door haar te worden gevolgd .":"P04","wij zullen dit met een voorbeeld ophelderen .":"P05","hierover ontstaat eenige discussie , doch dit voorstel heeft geen verder gevolg .":"P06","de heer sloet bekwam vierentwintig , de heer mejan een stem .":"P07","de voorzitter stelt voor dit verlof te verleenen .":"P08","de interpellatie is hiermede afgeloopen .":"P09","ook in boter wordt niet veel gedaan .":"P10","de senaat heeft gisteren de pensioen-wet aangenomen .":"P11","het berigt nopens een opstand te modena , wordt niet bevestigd .":"P12","een winkelhuis en erve , staande aan de oostzijde van de hoogstraat .":"P13","daartoe wordt zonder stemming besloten .":"P14","generaal chioco is tot minister van oorlog benoemd .":"P15","dat verlang ik ook niet .":"P16"};
+
+  var strip = document.getElementById("strip"), trayH = document.getElementById("tray-h"),
+      trayL = document.getElementById("tray-l"), result = document.getElementById("result"),
+      verdict = document.getElementById("verdict"), prov = document.getElementById("prov"),
+      btn = document.getElementById("draw"), radios = document.querySelectorAll("input[name=ver]");
+  if (!strip || !btn || typeof CARDS === "undefined") return;
+
+  var reduce = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var busy = false;
+
+  function version() { for (var i = 0; i < radios.length; i++) if (radios[i].checked) return +radios[i].value; return 4; }
+  function tray(v, word) { return CARDS.filter(function (c) { return c[2] <= v && c[0] === word; }); }
+  function sleep(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+  function pick(a) { return a[Math.floor(Math.random() * a.length)]; }
+
+  function showTray(word, cards, chosen) {
+    var counts = {}, order = [];
+    cards.forEach(function (c) { if (!(c[1] in counts)) { counts[c[1]] = 0; order.push(c[1]); } counts[c[1]]++; });
+    order.sort(function (a, b) { return counts[b] - counts[a]; });
+    trayH.textContent = "Tray “" + word + "”: " + cards.length + (cards.length === 1 ? " card" : " cards") +
+      ", " + order.length + " different next " + (order.length === 1 ? "word" : "words");
+    trayL.innerHTML = "";
+    order.forEach(function (w) {
+      var li = document.createElement("li");
+      if (w === chosen) li.className = "pick";
+      li.appendChild(document.createTextNode(w));
+      if (counts[w] > 1) { var i = document.createElement("i"); i.textContent = "×" + counts[w]; li.appendChild(i); }
+      trayL.appendChild(li);
+    });
+  }
+
+  function reset() {
+    strip.innerHTML = "<li class=\"start\">.</li>";
+    result.textContent = ""; verdict.textContent = ""; prov.textContent = "";
+    showTray(".", tray(version(), "."), null);
+  }
+
+  function sentence(words) {
+    var t = words.join(" ").replace(/ ([,.;:])/g, "$1");
+    return t.charAt(0).toUpperCase() + t.slice(1);
+  }
+
+  async function draw() {
+    if (busy) return;
+    busy = true; btn.disabled = true; radios.forEach(function (r) { r.disabled = true; });
+    var v = version(), cur = ".", words = [], used = [];
+    strip.innerHTML = "<li class=\"start\">.</li>";
+    result.textContent = ""; verdict.textContent = ""; prov.textContent = "";
+    var failed = false;
+    while (words.length < 30) {
+      var opts = tray(v, cur);
+      if (!opts.length) { failed = true; break; }
+      var card = pick(opts);
+      showTray(cur, opts, card[1]);
+      if (!reduce) await sleep(650);
+      var li = document.createElement("li");
+      li.className = "new"; li.style.setProperty("--c", COL[card[3]]); li.textContent = card[1];
+      strip.appendChild(li);
+      words.push(card[1]); used.push(card); cur = card[1];
+      if (!reduce) await sleep(380);
+      if (cur === ".") break;
+    }
+    if (failed) {
+      var x = document.createElement("li"); x.className = "x"; x.textContent = "×"; strip.appendChild(x);
+      result.textContent = "No card found."; verdict.textContent = "On paper you would write × and start again at the full stop.";
+    } else if (cur !== ".") {
+      result.textContent = sentence(words) + " …"; verdict.textContent = "Stopped after thirty words without reaching a full stop.";
+    } else {
+      result.textContent = "«" + sentence(words) + "»";
+      var key = words.join(" "), who = INPUTS[key];
+      verdict.textContent = who
+        ? "An exact copy of what participant " + who + " wrote. The machine can only repeat what it was given."
+        : "A sentence nobody wrote.";
+      var ppl = [], srcs = [];
+      used.forEach(function (c) { if (ppl.indexOf(c[4]) < 0) ppl.push(c[4]); var s = SRC[c[5]]; if (srcs.indexOf(s) < 0) srcs.push(s); });
+      prov.textContent = used.length + " cards from " + ppl.length + (ppl.length === 1 ? " participant" : " participants") + " (" + ppl.join(", ") + ") · " + srcs.join(", ");
+    }
+    busy = false; btn.disabled = false; radios.forEach(function (r) { r.disabled = false; });
+    btn.textContent = "Draw another";
+  }
+
+  btn.addEventListener("click", draw);
+  radios.forEach(function (r) { r.addEventListener("change", function () { btn.textContent = "Draw a sentence"; reset(); }); });
+  reset();
+})();
+</script>
+
+</body>
+</html>
